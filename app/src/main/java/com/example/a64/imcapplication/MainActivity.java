@@ -1,15 +1,22 @@
 package com.example.a64.imcapplication;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ExpandedMenuView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "IMCApplication";
+    private TextView txtresultado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,35 +25,52 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+         txtresultado = (TextView) findViewById(R.id.txt_result);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void calcular(View view) {
+        Log.d(TAG, "Entra a calcular con el click");
+        EditText edtpeso = (EditText) findViewById(R.id.edt_peso);
+        EditText edtaltura = (EditText) findViewById(R.id.edt_altura);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        String peso = edtpeso.getText().toString();
+        String altura = edtaltura.getText().toString();
+
+        if(altura.isEmpty() && peso.isEmpty()) return;
+        if(altura.matches("\\d+") && peso.matches("\\d+")){
+            float p = Float.parseFloat(peso);
+            float a = Float.parseFloat(altura);
+
+            calcularIMC(p, a);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public void calcularIMC(float kg, float cm){
+        
+        cm = (cm / 100);
+        float imc = kg / (cm * cm);
+        String resultado;
+        int color;
+        if (imc <16){
+            resultado = "BMI: " + imc + " ( Severamente Bajo )";
+            color = Color.RED;
+        }else if (imc < 18.5){
+            resultado = "BMI: " + imc + " ( Bajo )";
+            color = Color.YELLOW;
+        }else if (imc < 25){
+            resultado = "BMI: " + imc + " ( Normal )";
+            color = Color.GREEN;
+        }else if (imc < 30){
+            resultado = "BMI: " + imc + " ( Sobre peso )";
+            color = Color.YELLOW;
+        }else{
+            resultado = "BMI: " + imc + " ( Obeso )";
+            color = Color.RED;
+        }
+        txtresultado.setTextColor(color);
+        txtresultado.setText(resultado);
+        //Log.i(TAG, resultado);
+       // return resultado;
     }
 }
